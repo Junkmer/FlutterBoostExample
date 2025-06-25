@@ -71,16 +71,15 @@ public class TestActivity extends AppCompatActivity {
 
     @Override
     public void finish() {
-//        Map<String,Object> map = new HashMap<>();
-//        map.put("key1","value11111");
-//        FlutterBoost.instance().sendEventToFlutter("eventToFlutter",map);
-
-        Intent intent = new Intent();
-        intent.putExtra("msg","This message is from Native!!!");
-        intent.putExtra("bool", true);
-        intent.putExtra("int", 666);
-        setResult(123, intent);  // 返回结果给dart
-        super.finish();
+        Map<String,Object> map = new HashMap<>();
+        map.put("key1","value11111");
+        FlutterBoost.instance().sendEventToFlutter("eventToFlutter",map);
+//        Intent intent = new Intent();
+//        intent.putExtra("msg","This message is from Native!!!");
+//        intent.putExtra("bool", true);
+//        intent.putExtra("int", 666);
+//        setResult(123, intent);  // 返回结果给dart
+//        super.finish();
     }
 
     @Override

@@ -141,14 +141,14 @@ class _SimplePageState extends State<SimplePage> {
   void initState() {
     super.initState();
 
-    // ///添加事件响应者,监听native发往flutter端的事件
-    // removeListener = BoostChannel.instance.addEventListener("eventToFlutter", (key, arguments) {
-    //   Logger.error("我是测试的log.....接收 eventToFlutter 事件...... arguments = $arguments");
-    //   setState(() {
-    //     content = arguments.toString();
-    //   });
-    //   return Future.value(true);
-    // });
+    ///添加事件响应者,监听native发往flutter端的事件
+    removeListener = BoostChannel.instance.addEventListener("eventToFlutter", (key, arguments) {
+      Logger.error("我是测试的log.....接收 eventToFlutter 事件...... arguments = $arguments");
+      setState(() {
+        content = arguments.toString();
+      });
+      return Future.value(true);
+    });
   }
 
   @override
@@ -175,12 +175,14 @@ class _SimplePageState extends State<SimplePage> {
               child: const Text('跳转至原生界面', style: TextStyle(backgroundColor: Colors.red)),
               onTap: () {
                 BoostNavigator.instance
-                    .push("native_test", arguments: {"data": "我是Flutter层的数据"}).then((value) {
-                  Logger.error("我是测试的log........... value = $value");
-                  setState(() {
-                    content = value.toString();
-                  });
-                });
+                    .push("native_test", arguments: {"data": "我是Flutter层的数据"});
+                // BoostNavigator.instance
+                //     .push("native_test", arguments: {"data": "我是Flutter层的数据"}).then((value) {
+                //   Logger.error("我是测试的log........... value = $value");
+                //   setState(() {
+                //     content = value.toString();
+                //   });
+                // });
               },
             ),
             const SizedBox(height: 80),
