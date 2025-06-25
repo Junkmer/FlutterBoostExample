@@ -1,6 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boost/flutter_boost.dart';
+import 'package:flutter_module/chat.dart';
+import 'package:flutter_module/conversation.dart';
+import 'package:tencent_cloud_chat_sdk/enum/V2TimSDKListener.dart';
+import 'package:tencent_cloud_chat_sdk/enum/log_level_enum.dart';
+import 'package:tencent_cloud_chat_sdk/models/v2_tim_callback.dart';
+import 'package:tencent_cloud_chat_sdk/models/v2_tim_conversation.dart';
+import 'package:tencent_cloud_chat_uikit/base_widgets/tim_callback.dart';
+import 'package:tencent_cloud_chat_uikit/tencent_cloud_chat_uikit.dart';
 
 void main() {
   FlutterError.onError = (details) {
@@ -58,6 +66,22 @@ class _MyAppState extends State<MyApp> {
             );
           });
     },
+    'conversationPage': (settings, isContainerPage, uniqueId) {
+      return CupertinoPageRoute(
+          settings: settings,
+          builder: (_) {
+            return const Conversation();
+          });
+    },
+    'chatPage': (settings, isContainerPage, uniqueId) {
+      return CupertinoPageRoute(
+          settings: settings,
+          builder: (_) {
+            Map<String, dynamic> map = settings.arguments as Map<String, dynamic>;
+            V2TimConversation conversation = map['conversation'] as V2TimConversation;
+            return Chat(selectedConversation: conversation);
+          });
+    },
   };
 
   Route<dynamic>? routeFactory(RouteSettings settings, bool isContainerPage, String? uniqueId) {
@@ -79,6 +103,19 @@ class _MyAppState extends State<MyApp> {
         return home;
       },
     );
+  }
+
+  final CoreServicesImpl _coreInstance = TIMUIKitCore.getInstance();
+
+  @override
+  void initState() {
+    _coreInstance.init(
+        sdkAppID: 0, // Replace 0 with the SDKAppID of your IM application when integrating
+        // language: LanguageEnum.en, // 界面语言配置，若不配置，则跟随系统语言
+        loglevel: LogLevelEnum.V2TIM_LOG_DEBUG,
+        onTUIKitCallbackListener:  (TIMCallback callbackValue){}, // [建议配置，详见此部分](https://cloud.tencent.com/document/product/269/70746#callback)
+        listener: V2TimSDKListener());
+    super.initState();
   }
 
   @override
@@ -189,8 +226,33 @@ class _SimplePageState extends State<SimplePage> {
             Text(
               '上一个原生页面返回的数据：$content',
               style: const TextStyle(color: Colors.blue),
-            )
+            ),
+            const SizedBox(height: 80),
+            GestureDetector(
+              child: const Text('登录腾讯云IM', style: TextStyle(backgroundColor: Colors.red)),
+              onTap: () {
+                loginIM();
+              },
+            ),
           ],
         )));
+  }
+
+  void loginIM() async{
+    var userID = "";
+    var userSig = "";
+
+    if(userID.isEmpty || userSig.isEmpty){
+      TUIToast.show(content: "登录IM之前，userID 和 userSig 需要填写正确");
+      return;
+    }
+    final CoreServicesImpl _coreInstance = TIMUIKitCore.getInstance();
+    V2TimCallback callback = await _coreInstance.login(userID: userID, userSig: userSig);
+    if(callback.code == 0){
+      Logger.log("登录成功");
+      BoostNavigator.instance.push("conversationPage");
+    }else{
+      Logger.error("登录失败，code:${callback.code} | desc:${callback.desc}");
+    }
   }
 }
