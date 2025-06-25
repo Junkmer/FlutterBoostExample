@@ -1,0 +1,42 @@
+def currentVersion = gradle.gradleVersion
+if (currentVersion == "7.0") {
+    println "currentGradleVersion: 7.0"
+    dependencyResolutionManagement {
+        repositories {
+            mavenCentral()
+            maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
+            maven {url 'https://developer.huawei.com/repo/'}
+            maven {url 'https://developer.hihonor.com/repo'}
+        }
+    }
+} else if (currentVersion >= "7.1") {
+    println "currentGradleVersion >= 7.1"
+    pluginManagement {
+        repositories {
+            gradlePluginPortal()
+            mavenCentral()
+            maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
+            maven {url 'https://developer.huawei.com/repo/'}
+            maven {url 'https://developer.hihonor.com/repo'}
+        }
+    }
+    dependencyResolutionManagement {
+        repositories {
+            mavenCentral()
+            maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
+            maven {url 'https://developer.huawei.com/repo/'}
+            maven {url 'https://developer.hihonor.com/repo'}
+        }
+    }
+}
+
+rootProject.name = "BoostTestAndroid"
+include ':app'
+
+setBinding(new Binding([gradle: this]))
+evaluate(new File(
+        settingsDir.parentFile,
+        'flutter_module/.android/include_flutter.groovy'
+))
+include ':flutter_module'
+project(':flutter_module').projectDir = new File('../flutter_module')
