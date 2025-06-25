@@ -79,7 +79,7 @@ public class TestActivity extends AppCompatActivity {
 //        intent.putExtra("bool", true);
 //        intent.putExtra("int", 666);
 //        setResult(123, intent);  // 返回结果给dart
-//        super.finish();
+        super.finish();
     }
 
     @Override
